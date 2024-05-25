@@ -1,5 +1,6 @@
 package com.eotw95.samplebluetooth
 
+import android.bluetooth.BluetoothManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,25 +23,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val bluetoothManager = getSystemService(BluetoothManager::class.java)
+                    val bluetoothAdapter = bluetoothManager.adapter
+                    if (bluetoothAdapter == null) println("Device doesn't support Bluetooth")
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SampleBluetoothTheme {
-        Greeting("Android")
     }
 }
