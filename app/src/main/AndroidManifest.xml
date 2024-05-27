@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--Androidアプリが他のBluetoothデバイスを探すには以下のscan権限が必要-->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <!--Androidアプリが他のBluetoothデバイスの検出、接続、相対位置の特定には以下の権限が必要-->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <application
         android:allowBackup="true"
