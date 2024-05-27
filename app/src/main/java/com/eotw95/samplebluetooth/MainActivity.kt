@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.registerForActivityResult
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.eotw95.samplebluetooth.ui.theme.SampleBluetoothTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var requestBtPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var enableBtLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBluetoothDialog()
@@ -28,11 +31,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) {
-                    Button(onClick = { showBluetoothDialog() }) {
-                        Text(text = "show bluetooth dialog")
-                    }
-                }
+                ) {}
             }
         }
     }
@@ -43,16 +42,32 @@ class MainActivity : ComponentActivity() {
         val bluetoothAdapter = bluetoothManager.adapter
         if (bluetoothAdapter == null) println("Device doesn't support Bluetooth")
 
-        // ② enable bluetooth of device
-        if (!bluetoothAdapter.isEnabled) {
-            // Bluetoothで付近のデバイスを検出することの許可をユーザーに求めるダイアログの表示
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    // 許可を選択したら通るルート
+        // ② bluetoothAdapterがnullでなければ、Bluetoothで付近のデバイスを検出することの許可をユーザーに求めるダイアログの表示
+        requestBtPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // 許可を選択したら通るルート
+                println("デバイス検出を許可")
+
+                if (!bluetoothAdapter.isEnabled) {
+                    println("Bluetoothが有効化されていない")
+                    // ③ Bluetoothが有効化されていないため、有効化するためのリクエストをユーザーに投げる
+                    enableBtLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
                 } else {
-                    // 拒否を選択したら通るルート
+                    // Bluetoothが有効化されている
+                    println("Bluetoothが有効化されている")
                 }
-            }.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
+
+            } else {
+                // 拒否を選択したら通るルート
+                println("デバイス検出を拒否")
+            }
         }
+        enableBtLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) scanDevice() else println("result is ng")
+        }
+
+        requestBtPermissionLauncher.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
     }
+
+    private fun scanDevice() {}
 }
