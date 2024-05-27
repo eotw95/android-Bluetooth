@@ -3,6 +3,7 @@ package com.eotw95.samplebluetooth
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Build.VERSION
 import android.os.Bundle
@@ -42,7 +43,13 @@ class MainActivity : ComponentActivity() {
         // ① get BluetoothAdapter
         val bluetoothManager = getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter = bluetoothManager.adapter
+
         if (bluetoothAdapter == null) println("Device doesn't support Bluetooth")
+
+        // BLEがサポートされているデバイスかどうか確認
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            println("BLE is not supported")
+        } else println("BLE is supported")
 
         requestBtPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
