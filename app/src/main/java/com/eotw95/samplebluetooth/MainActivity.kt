@@ -50,6 +50,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * BleデバイスをScanする
+     * Scanするにはデバイス側で位置情報権限をアプリに許可する必要ある
+     */
     private fun scanBleDevice() {
         val btManager = getSystemService(BluetoothManager::class.java)
         val btScanner = btManager.adapter.bluetoothLeScanner
